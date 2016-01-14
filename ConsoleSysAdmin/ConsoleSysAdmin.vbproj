@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{74B6D6A0-BA0B-4680-997C-90222B32AA97}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <StartupObject>ConsoleSysAdmin.Module1</StartupObject>
+    <StartupObject>ConsoleSysAdmin.MainPrompt</StartupObject>
     <RootNamespace>ConsoleSysAdmin</RootNamespace>
     <AssemblyName>ConsoleSysAdmin</AssemblyName>
     <FileAlignment>512</FileAlignment>
@@ -67,7 +67,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Module1.vb" />
+    <Compile Include="MainPrompt.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -103,6 +103,12 @@
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SysAdminNet\SysAdminNet.vbproj">
+      <Project>{b27ed147-b65f-457e-976b-56d10cbf3ecd}</Project>
+      <Name>SysAdminNet</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -108,11 +108,15 @@ Public Class WakeOnLAN
             Next
 
             _PacketSent = packet.ToString.Substring(1)
+
+            Return payloadData
         Catch ex As Exception
             _PacketSent = "EXCEPTION: " & ex.ToString
+            'TODO Review error handling here
+            ReDim payloadData(1)
+            payloadData(0) = Byte.Parse("FF", Globalization.NumberStyles.HexNumber)
+            Return payloadData
         End Try
-
-        Return payloadData
     End Function
 
     Function sendUDP(ByVal payload As Byte(), ByVal endPoint As IPEndPoint) As Integer
