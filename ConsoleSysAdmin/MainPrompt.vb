@@ -1,5 +1,5 @@
 ﻿Module MainPrompt
-    Public Const PromptSymbol As String = "SAN > "
+    Public Const PromptSymbol As String = "SAT > "
     Public Const ApplicationTitle As String = ".net System Administrator Toolkit"
 
     Sub Main()
@@ -12,7 +12,7 @@
         Console.ForegroundColor = ConsoleColor.Cyan
         Console.Title = ApplicationTitle & " command line console"
 
-        Console.WriteLine("Welcome to " & ApplicationTitle & "console frontend")
+        Console.WriteLine("Welcome to " & ApplicationTitle & " console frontend")
         Console.WriteLine("This package is version " & GetType(SysAdminNet.Main).Assembly.GetName().Version.ToString)
         Console.WriteLine()
         Console.Write(PromptSymbol)
@@ -32,7 +32,11 @@
                     Dim Worker As New SysAdminNet.SysUpTime
 
                     Worker.QuerySysUpTime()
-                    Result = "Last boot was on: " & Worker.LastStartup & Environment.NewLine & "Uptime is: " & Worker.UpTimeString
+                    If Worker.ErrorInResult Then
+                        Result = "ERROR - " & Worker.ErrorDetails
+                    Else
+                        Result = "Last boot was on: " & Worker.LastStartup & Environment.NewLine & "Uptime is: " & Worker.UpTimeString
+                    End If
                 Case "exit", "quit"
                     Exit Do
                 Case "ver"
@@ -40,7 +44,7 @@
                 Case Else
                     Result = "Command not acknowldged: -" & Command & "-"
             End Select
-            Console.WriteLine(" " & Result)
+            Console.WriteLine(Result)
             Console.Write(PromptSymbol)
         Loop
 
