@@ -79,9 +79,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="C:\Users\luca\Desktop\SubnetCalc.vb">
-      <Link>SubnetCalc.vb</Link>
-    </Compile>
+    <Compile Include="SubnetCalc.vb" />
     <Compile Include="SysUpTime.vb" />
     <Compile Include="Tail.vb" />
     <Compile Include="WakeOnLAN.vb" />

@@ -1,5 +1,10 @@
 ﻿Public Class SubnetCalc
+    Public ReadOnly Property BroadcastAddress As String
     Public ReadOnly Property CalcError As String
+    Public ReadOnly Property SubnetAddress As String
+    Public ReadOnly Property SubnetMask As String
+    Public ReadOnly Property UsableRange As String
+
     ''' <summary>
     ''' Start the subnet calculation
     ''' </summary>
@@ -9,9 +14,13 @@
         Dim TextOctets() As String
         Dim DecimalOctets As List(Of Integer)
         Dim BinaryOctets As List(Of String)
+
         Dim BinarySubnetMask As String
+        Dim BinaryInvertedSubnetMask As String
+
         Dim BinaryFullAddress As String
         Dim BinaryFullSubnet As String
+        Dim BinaryFullBroadcast As String
 
         Try
             If Bits < 1 OrElse Bits > 31 Then
@@ -20,8 +29,8 @@
             End If
 
             TextOctets = IPAddress.Split(".")
-            If TextOctets.Count < 4 Then
-                _CalcError = "IP Address is in wrong format, 4 decimal values separated by dot (.) must be provided."
+            If TextOctets.Length <> 4 Then
+                _CalcError = "IP Address is in wrong format: 4 decimal values separated by dot (.) must be provided."
                 Return False
             End If
 
@@ -29,7 +38,7 @@
             BinaryOctets = New List(Of String)
             BinaryFullAddress = ""
 
-            For Each TextOctet In TextOctets
+            For Each TextOctet As String In TextOctets
                 Dim DecimalOctet As Integer
                 Dim BinaryOctet As String
                 If Integer.TryParse(TextOctet, DecimalOctet) Then
@@ -50,32 +59,94 @@
             Next
 
             BinarySubnetMask = ""
-            For i = 1 To Bits
+            BinaryInvertedSubnetMask = ""
+            For i As Integer = 1 To Bits
                 BinarySubnetMask &= "1"
+                BinaryInvertedSubnetMask &= "0"
             Next
-            BinarySubnetMask.PadRight(32, "0")
+            BinarySubnetMask = BinarySubnetMask.PadRight(32, "0")
+            BinaryInvertedSubnetMask = BinaryInvertedSubnetMask.PadRight(32, "1")
 
-            BinaryFullSubnet = ""
-            For Bit = 1 To 32
-                BinaryFullSubnet &= Convert.ToString(Convert.ToBoolean(BinaryFullAddress(Bit - 1)) And Convert.ToBoolean(BinarySubnetMask(Bit - 1)))
-            Next
+            BinaryFullSubnet = AndOperation(BinaryFullAddress, BinarySubnetMask)
+            BinaryFullBroadcast = OrOperation(BinaryFullSubnet, BinaryInvertedSubnetMask)
 
+            _SubnetAddress = FormatDottedDecimal(BinaryToDottedDecimal(BinaryFullSubnet))
+            _BroadcastAddress = FormatDottedDecimal(BinaryToDottedDecimal(BinaryFullBroadcast))
+            _SubnetMask = FormatDottedDecimal(BinaryToDottedDecimal(BinarySubnetMask))
+            _UsableRange = UsableRangeCalc(BinaryFullSubnet, BinaryFullBroadcast)
+
+            _CalcError = "None"
             Return True
         Catch ex As Exception
             _CalcError = ex.ToString
             Return False
         End Try
     End Function
-    Function BinaryToDottedDecimal(FullBinary As String) As List(Of Integer)
-        Dim DottedBinary As List(Of Integer)
+    Function AndOperation(Address As String, SubnetMask As String) As String
+        Dim FinalResult As String
 
-        DottedBinary = New List(Of Integer)
-        For i = 0 To 31 Step 8
-            DottedBinary.Add(Convert.ToInt16(FullBinary.Substring(i, i + 8), 2))
+        FinalResult = ""
+        For Bit As Integer = 1 To 32
+            Select Case Convert.ToBoolean(Char.GetNumericValue(Address(Bit - 1))) And Convert.ToBoolean(Char.GetNumericValue(SubnetMask(Bit - 1)))
+                Case True
+                    FinalResult &= "1"
+                Case False
+                    FinalResult &= "0"
+            End Select
         Next
 
+        Return FinalResult
 
+    End Function
+    Function OrOperation(Address As String, InvertedSubnetMask As String) As String
+        Dim FinalResult As String
 
+        FinalResult = ""
+        For Bit As Integer = 1 To 32
+            Select Case Convert.ToBoolean(Char.GetNumericValue(Address(Bit - 1))) Or Convert.ToBoolean(Char.GetNumericValue(InvertedSubnetMask(Bit - 1)))
+                Case True
+                    FinalResult &= "1"
+                Case False
+                    FinalResult &= "0"
+            End Select
+        Next
+        Return FinalResult
+    End Function
+    Function BinaryToDottedDecimal(FullBinary As String) As List(Of Integer)
+        Dim DottedDecimal As List(Of Integer)
+        Dim PartBinary As String
 
+        DottedDecimal = New List(Of Integer)
+        For i As Integer = 0 To 31 Step 8
+            PartBinary = FullBinary.Substring(i, 8)
+            DottedDecimal.Add(Convert.ToInt16(PartBinary, 2))
+        Next
+        Return DottedDecimal
+    End Function
+    Function FormatDottedDecimal(Octets As List(Of Integer)) As String
+        Dim FinalIP As Text.StringBuilder
+        Dim IsFirst As Boolean
+
+        FinalIP = New System.Text.StringBuilder
+        IsFirst = True
+
+        For Each Octet As Integer In Octets
+            If IsFirst Then
+                IsFirst = False
+            Else
+                FinalIP.Append(".")
+            End If
+            FinalIP.Append(Octet.ToString)
+        Next
+        Return FinalIP.ToString
+    End Function
+    Function UsableRangeCalc(BinarySubnetAddress As String, BinaryBroadcastAddress As String) As String
+        Dim BinaryFirstUsable As String
+        Dim BinaryLastUsable As String
+
+        BinaryFirstUsable = BinarySubnetAddress.Substring(0, 31) & "1"
+        BinaryLastUsable = BinaryBroadcastAddress.Substring(0, 31) & "0"
+
+        Return FormatDottedDecimal(BinaryToDottedDecimal(BinaryFirstUsable)) & " … " & FormatDottedDecimal(BinaryToDottedDecimal(BinaryLastUsable))
     End Function
 End Class
