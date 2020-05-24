@@ -1,4 +1,5 @@
-﻿Module MainPrompt
+﻿Imports LucaMauri.Open.SysAdminNet
+Module Prompt
     Public Const PromptSymbol As String = "SAT > "
     Public Const ApplicationTitle As String = ".net System Administrator Toolkit"
 
@@ -15,7 +16,7 @@
 
 
         Console.WriteLine("Welcome to " & ApplicationTitle & " console frontend")
-        Console.WriteLine("This package is version " & GetType(SysAdminNet.Main).Assembly.GetName().Version.ToString)
+        Console.WriteLine("This package is version " & GetType(LucaMauri.Open.SysAdminNet.Prompt).Assembly.GetName().Version.ToString)
         Console.WriteLine("Current date and time is " & DateTime.Now.ToString("u"))
         Console.WriteLine()
         Console.Write(PromptSymbol)
@@ -37,7 +38,7 @@
                     'Dim Worker As New SysAdminNet.Tail(System.IO.Path.GetFullPath(Args(0))
 
                 Case "subnetcalc", "subnet"
-                    Dim Worker As New SysAdminNet.SubnetCalc
+                    Dim Worker As New IPv4Handler
 
                     If Worker.Calculate(Args(0), Convert.ToInt16(Args(1))) Then
                         Console.WriteLine("Subnet address:    {0}", Worker.SubnetAddress)
@@ -52,7 +53,7 @@
                         Console.WriteLine(Worker.CalcError)
                     End If
                 Case "uptime"
-                    Dim Worker As New SysAdminNet.SysUpTime
+                    Dim Worker As New SysUpTime
 
                     Worker.QuerySysUpTime()
                     If Worker.ErrorInResult Then
@@ -61,7 +62,7 @@
                         Result = "Last boot was on: " & Worker.LastStartup & Environment.NewLine & "Uptime is: " & Worker.UpTimeString
                     End If
                 Case "wol", "wakeonlan"
-                    Dim Worker As New SysAdminNet.WakeOnLAN
+                    Dim Worker As New WakeOnLAN
 
                     Worker.macAddress = Args(0)
                     Worker.wakeIt()
@@ -73,7 +74,7 @@
                 Case "exit", "quit"
                     Exit Do
                 Case "ver"
-                    Result = "This package is version " & GetType(SysAdminNet.Main).Assembly.GetName().Version.ToString
+                    Result = "This package is version " & GetType(LucaMauri.Open.SysAdminNet.Prompt).Assembly.GetName().Version.ToString
                 Case Else
                     Result = "Command not acknowldged: -" & Command & "-"
             End Select

@@ -1,4 +1,6 @@
-﻿Public Class SysUpTime
+﻿Imports System.Diagnostics
+
+Public Class SysUpTime
     Public ReadOnly Property ErrorInResult As Boolean
     Public ReadOnly Property ErrorDetails As String
     Public ReadOnly Property UpTimeSpan As TimeSpan

@@ -15,7 +15,7 @@ Public Class Tail
         PreviousMaxOffset = SourceReader.BaseStream.Length
 
         Do While True
-            Threading.Thread.Sleep(200)
+            Threading.Thread.Sleep(1000)
             If SourceReader.BaseStream.Length = PreviousMaxOffset Then
                 Continue Do
             Else

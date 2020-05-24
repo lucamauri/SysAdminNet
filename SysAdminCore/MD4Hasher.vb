@@ -256,9 +256,9 @@ Public Class MD4Hasher
             If offset >= block.Length Then
                 Exit For
             End If
-            X(i) = (CType(block(offset + 0), UInt32) And 255) Or _
-           (CType(block(offset + 1), UInt32) And 255) << 8 Or _
-          (CType(block(offset + 2), UInt32) And 255) << 16 Or _
+            X(i) = (CType(block(offset + 0), UInt32) And 255) Or
+           (CType(block(offset + 1), UInt32) And 255) << 8 Or
+          (CType(block(offset + 2), UInt32) And 255) << 16 Or
           (CType(block(offset + 3), UInt32) And 255) << 24
             offset += 4
         Next
